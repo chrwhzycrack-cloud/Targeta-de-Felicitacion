@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Feliz Cumpleaños Sao 🎉</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  body{
+    margin:0;
+    font-family:'Poppins', sans-serif;
+    background-color:#f5e6d3;
+    display:flex;
+    justify-content:center;
+    align-items:flex-start;
+    min-height:100vh;
+    padding:20px;
+  }
+  .card{
+    background:#fff;
+    max-width:720px;
+    width:100%;
+    border-radius:20px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.15);
+    padding:20px;
+    position:relative;
+    overflow:hidden;
+  }
+  h1{
+    text-align:center;
+    color:#b85c38;
+  }
+  .message{
+    margin-top:20px;
+    background:rgba(245,230,211,0.7);
+    padding:20px;
+    border-radius:15px;
+    min-height:300px;
+    overflow-y:auto;
+    white-space:pre-wrap;
+  }
+  .controls{
+    display:flex;
+    gap:10px;
+    margin-top:15px;
+    justify-content:center;
+  }
+  button{
+    background:linear-gradient(45deg,#f9cda5,#f5b67f);
+    border:none;
+    padding:12px 18px;
+    border-radius:12px;
+    font-weight:600;
+    cursor:pointer;
+    box-shadow:0 4px 8px rgba(0,0,0,0.2);
+    transition:all 0.2s;
+  }
+  button:hover{transform:scale(1.05);}
+  .polaroids{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    justify-content:center;
+    margin-top:20px;
+  }
+  .polaroid{
+    background:#fff;
+    padding:8px 8px 20px 8px;
+    border-radius:12px;
+    box-shadow:0 5px 15px rgba(0,0,0,0.15);
+    text-align:center;
+    width:120px;
+    position:relative;
+    transform:rotate(-2deg);
+    transition:transform 0.3s;
+  }
+  .polaroid:hover{transform:rotate(1deg) scale(1.05);}
+  .polaroid img{
+    width:100%;
+    border-radius:8px;
+  }
+  .polaroid p{
+    font-size:12px;
+    margin-top:6px;
+    color:#b85c38;
+  }
+  /* Confetti sencillo */
+  canvas.confetti{
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+  }
+</style>
+</head>
+<body>
+  <div class="card">
+    <canvas class="confetti" id="confetti"></canvas>
+    <h1>¡Feliz cumpleaños, Sao! 🎉</h1>
+    
+    <!-- Mensaje de la carta -->
+    <div class="message" id="message">
+      <div id="typing"></div>
+    </div>
+
+    <!-- Polaroids de gatitos -->
+    <div class="polaroids">
+      <!-- Reemplaza las URLs por tus imágenes -->
+      <div class="polaroid"><img src="gatito1.jpg" alt="gatito1"><p>Feliz día 🐱</p></div>
+      <div class="polaroid"><img src="gatito2.jpg" alt="gatito2"><p>Con amor 💖</p></div>
+      <div class="polaroid"><img src="gatito3.jpg" alt="gatito3"><p>Para ti 💕</p></div>
+    </div>
+
+    <!-- Botones de control -->
+    <div class="controls">
+      <button id="playBtn">▶️ Reproducir música</button>
+      <button id="revealBtn">💌 Mostrar mensaje</button>
+    </div>
+  </div>
+
+<script>
+/* ======== Mensaje ======== */
+const textoPrincipal = [
+"Hola Sao, mi amor,",
+"",
+"Quiero comenzar esta carta felicitándote por un año más de vida. Para mí, no es solo un número; es un año más que aprendiste, que viviste experiencias nuevas y que, afortunadamente, la vida me permitió tener un pedacito más de ti en mi.",
+"",
+"Te confieso algo… amo todo lo que eres. Amo cada esfuerzo que haces, cada sonrisa, cada lágrima que derramas por tus sueños y cada momento en que dejas atrás lo que no te sirve para seguir creciendo. Verte crecer como persona, como ser humano, como mujer… ha sido uno de los regalos más grandes que la vida me ha dado.",
+"",
+"Perdóname si los regalos que tengo para ti no son los que imaginabas o los más perfectos; todo lo elegí pensando en ti, con amor y esfuerzo. Cada detalle tiene un significado especial, pensado únicamente para ti, porque nada es más importante para mí que verte feliz.",
+"",
+"Hoy, tu cumpleaños, no es un día cualquiera. Para mí, es un recordatorio de lo increíble que es que existas en este mundo tan caótico. Tu llegada a mi vida hizo que todo tuviera sentido, que cada día tuviera un color distinto y un motivo para sonreír.",
+"",
+"Sao, a veces no sé cómo expresarte todo lo que siento, pero cada vez que pienso en ti, mi corazón se llena de amor puro, sincero y profundo. Solo quiero cuidarte, acompañarte y amarte de manera sana, respetuosa y verdadera.",
+"",
+"Gracias por ser tú, por existir, por enseñarme lo que significa amar y ser amado. Hoy deseo que sientas todo el amor que tengo por ti, que cada instante de este día esté lleno de alegría y que nunca olvides lo especial que eres para mí.",
+"",
+"Feliz cumpleaños, mi amor. Te amo más de lo que las palabras pueden decir.",
+"",
+"Con todo mi cariño,",
+"Christian J."
+];
+
+/* ======== Typed effect ======== */
+const typingEl = document.getElementById('typing');
+let idxLine = 0, idxChar = 0;
+function typeStep(){
+  if(idxLine >= textoPrincipal.length) return;
+  let line = textoPrincipal[idxLine];
+  typingEl.textContent += line.charAt(idxChar);
+  idxChar++;
+  if(idxChar > line.length){
+    idxLine++; idxChar=0;
+    typingEl.textContent += "\n\n";
+    setTimeout(typeStep, 600);
+  } else {
+    setTimeout(typeStep, 40 + Math.random()*30);
+  }
+}
+
+/* ======== Audio ======== */
+const audio = new Audio();
+audio.src = "NewHomeSlowed.mp3"; // <<--- Aquí pones tu canción MP3
+audio.preload = "auto";
+
+document.getElementById('playBtn').addEventListener('click',()=>{
+  audio.play();
+  typeStep();
+});
+
+document.getElementById('revealBtn').addEventListener('click',()=>{
+  typingEl.textContent = textoPrincipal.join("\n\n");
+});
+
+/* ======== Confetti sencillo ======== */
+const canvas = document.getElementById('confetti');
+const ctx = canvas.getContext('2d');
+let confettiPieces = [], confettiAnim;
+function resizeCanvas(){
+  canvas.width = canvas.clientWidth;
+  canvas.height = canvas.clientHeight;
+}
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
+function makeConfetti(){
+  confettiPieces = [];
+  const count = Math.max(16, Math.floor(canvas.width / 20));
+  for(let i=0;i<count;i++){
+    confettiPieces.push({
+      x: Math.random()*canvas.width,
+      y: -Math.random()*canvas.height,
+      r: 6 + Math.random()*8,
+      d: 2 + Math.random()*6,
+      tilt: Math.random()*10,
+      color: ['#f5b67f','#f9cda5','#b85c38','#ffd166'][Math.floor(Math.random()*4)],
+      speed: 1 + Math.random()*3
+    });
+  }
+}
+function renderConfetti(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  confettiPieces.forEach(p=>{
+    p.tilt += 0.05 * p.d;
+    p.y += p.speed;
+    p.x += Math.sin(p.tilt) * 1.2;
+    ctx.fillStyle = p.color;
+    ctx.beginPath();
+    ctx.ellipse(p.x,p.y,p.r,p.r*0.6,p.tilt,0,Math.PI*2);
+    ctx.fill();
+  });
+  confettiAnim = requestAnimationFrame(renderConfetti);
+  confettiPieces = confettiPieces.filter(p=>p.y < canvas.height+30);
+  if(confettiPieces.length < 8){stopConfetti();}
+}
+function startConfetti(){makeConfetti();if(!confettiAnim) renderConfetti();}
+function stopConfetti(){if(confettiAnim){cancelAnimationFrame(confettiAnim);confettiAnim=null;ctx.clearRect(0,0,canvas.width,canvas.height);}}
+</script>
+</body>
+</html>
